@@ -1,0 +1,120 @@
+box: node:8
+build:
+  steps:
+    - script:
+        name: A step that executes `npm install` command and creates node-modules in directory ./logistics-ms based on package.json in that directory 
+        code: npm install --prefix . 
+    - script:
+        name: Create TLS key and cert
+        code: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=nginxsvc/O=nginxsvc"
+
+push-to-releases:
+  steps:
+    # Push to public docker repo Container Registry (CR)
+    - internal/docker-push:
+        tag: $WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
+        cmd: node /pipeline/source/index.js
+
+# for now we will delete and recreate the namespace, however, at some point that may be a little much for just a redeployment of the Pod! 
+deploy-to-oke:
+  box:
+        id: alpine
+        cmd: /bin/sh
+  steps:
+    - bash-template
+    
+    - script:
+        name: "Visualise Kubernetes config"
+        code: cat kubernetes-deployment.yml
+    
+    - kubectl:
+        name: delete namespace
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: delete namespace $KUBERNETES_NAMESPACE --ignore-not-found=true
+        
+    - script:
+        name: wait to delete namespace
+        code: sleep 30
+        
+    - kubectl:
+        name: create namespace    
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: create namespace $KUBERNETES_NAMESPACE
+        
+    - kubectl:
+        name: create OCR secret
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: create secret docker-registry wrelease --docker-server=wcr.io --docker-username=$WERCKER_APPLICATION_OWNER_NAME --docker-password=$KUBERNETES_TOKEN --docker-email=${WERCKER_APPLICATION_OWNER_NAME}@mail.com --namespace=$KUBERNETES_NAMESPACE
+
+    - kubectl:
+        name: create TLS secret
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: create secret tls tls-secret --key $WERCKER_ROOT/tls.key --cert $WERCKER_ROOT/tls.crt --namespace=$KUBERNETES_NAMESPACE
+        
+    - kubectl:
+        name: create 
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: create -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$KUBERNETES_NAMESPACE
+
+    - script:
+        name: "Visualise Ingress config"
+        code: cat ingress.yml
+
+    - kubectl:
+        name: create Ingress configuration
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: create -f $WERCKER_ROOT/ingress.yml --namespace=$KUBERNETES_NAMESPACE
+
+# redeployment after the code has changed; no changes in kubernetes configuration 
+redeploy-to-oke:
+  box:
+        id: alpine
+        cmd: /bin/sh
+  steps:
+    - bash-template
+    
+    - script:
+        name: "Visualise Kubernetes config"
+        code: cat kubernetes-deployment.yml
+    
+        
+    - kubectl:
+        name: create deployment
+        server: $KUBERNETES_MASTER
+        token: $KUBERNETES_TOKEN
+        insecure-skip-tls-verify: true
+        command: apply -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$KUBERNETES_NAMESPACE
+
+
+functional-test:
+  steps:
+    - script:
+        name: Run and Test microservice
+        code: |
+              mkdir -p "/pipeline"
+              node $WERCKER_ROOT/index.js &
+              sleep 5
+              EVENT_MONITOR_MS_URL=http://localhost:8098/health
+              echo 'Microservice URL=' $EVENT_MONITOR_MS_URL
+              if curl -X GET  $EVENT_MONITOR_MS_URL | grep "uptime"
+              then
+                  # if the keyword is in the conent
+                  echo "Test passed: health was returned"
+              else
+                  echo "Test failed: no uptime in health response"
+                  exit -1
+              fi
+              sleep 1
+

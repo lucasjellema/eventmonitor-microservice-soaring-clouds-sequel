@@ -1,0 +1,31 @@
+{
+  "name": "soaring-event-monitor-ms",
+  "version": "1.0.0",
+  "description": "Microservice for monitoring and gathering all events.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 8
+    },
+    "env": {
+      "node": true
+    },
+    "extends": "eslint:recommended"
+  },
+  "keywords": [
+    "soaring",
+    "event hub",
+    "monitor"
+  ],
+  "author": "Lucas Jellema",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "elasticsearch": "^14.0.0",
+    "kafka-node": "^2.2.0"
+  }
+}

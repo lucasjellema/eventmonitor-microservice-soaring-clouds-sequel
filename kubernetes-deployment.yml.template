@@ -1,0 +1,49 @@
+#
+# Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+#
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rest-eventmonitorms
+  labels:
+    run: rest-eventmonitorms
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: rest-eventmonitorms
+    spec:
+      containers:
+      - image: wcr.io/$WERCKER_APPLICATION_OWNER_NAME/$WERCKER_APPLICATION_NAME:$WERCKER_GIT_BRANCH-$WERCKER_GIT_COMMIT
+        imagePullPolicy: Always
+        name: rest-eventmonitorms
+        ports:
+        - containerPort: 8098
+          protocol: TCP
+        env:
+          - name: ELASTIC_CONNECTOR
+            value: $ELASTIC_CONNECTOR_VARIABLE
+          - name: EVENT_HUB_HOST
+            value: $EVENT_HUB
+      imagePullSecrets:
+      - name: wrelease
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest-eventmonitorms-svc
+spec:
+  selector:
+    run: rest-eventmonitorms
+  ports:
+    - port: 8089
+      targetPort: 8098
+  type: ClusterIP
