@@ -1,0 +1,30 @@
+{
+	"info": {
+		"name": "EventMonitor-MS-API",
+		"_postman_id": "2ee8f101-cdb6-442f-841c-969794d5ed9a",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health EventMonitor MS API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{eventmonitor-ms-api-endpoint}}/health/",
+					"host": [
+						"{{eventmonitor-ms-api-endpoint}}"
+					],
+					"path": [
+						"health",
+						""
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

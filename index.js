@@ -9,34 +9,34 @@ var eventHubListener = require("./EventHubListener.js");
 var model = require("./model");
 
 var PORT = process.env.APP_PORT || 8098;
-var APP_VERSION = "0.0.3"
+var APP_VERSION = "0.0.4"
 var APP_NAME = "EventMonitorMS"
 console.log("Running " + APP_NAME + " version " + APP_VERSION);
 
 eventHubListener.subscribeToEvents(
     (message) => {
-      console.log("EventBridge: Received event from event hub");
-      try {
-        var event = JSON.parse(message);         
-        handleEventHubEvent(event);
-  
-      } catch (error) {
-        console.log("failed to parse message from event hub", error);
-  
-      }
-    }
-  );
+        console.log("EventBridge: Received event from event hub");
+        try {
+            var event = JSON.parse(message);
+            handleEventHubEvent(event);
 
-  function handleEventHubEvent(event) {
+        } catch (error) {
+            console.log("failed to parse message from event hub", error);
+
+        }
+    }
+);
+
+function handleEventHubEvent(event) {
     console.log("Event payload " + JSON.stringify(event));
     // store event in Elastic Search Index
-    model.saveEvent( event).then((result) => {
-console.log("Event was saved to index")
-    }).catch( function(e){
-        console.error(e)
-    })
-   
-  }
+    // model.saveEvent(event).then((result) => {
+    //     console.log("Event was saved to index")
+    // }).catch(function (e) {
+    //     console.error(e)
+    // })
+
+}
 
 
 var app = express();
@@ -61,7 +61,7 @@ app.get('/about', function (req, res) {
 
 
 app.get('/health', function (req, res) {
-    var health = { "status": "OK", "uptime": process.uptime(),"version": APP_VERSION }
+    var health = { "status": "OK", "uptime": process.uptime(), "version": APP_VERSION }
     res.setHeader('Content-Type', 'application/json');
     res.send(health);
 });
