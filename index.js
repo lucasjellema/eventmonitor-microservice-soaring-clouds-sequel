@@ -9,7 +9,7 @@ var eventHubListener = require("./EventHubListener.js");
 var model = require("./model");
 
 var PORT = process.env.APP_PORT || 8098;
-var APP_VERSION = "0.0.2"
+var APP_VERSION = "0.0.3"
 var APP_NAME = "EventMonitorMS"
 console.log("Running " + APP_NAME + " version " + APP_VERSION);
 
