@@ -27,16 +27,16 @@ deploy-to-oke:
         name: "Visualise Kubernetes config"
         code: cat kubernetes-deployment.yml
     
-    - kubectl:
-        name: delete namespace
-        server: $KUBERNETES_MASTER
-        token: $KUBERNETES_TOKEN
-        insecure-skip-tls-verify: true
-        command: delete namespace $KUBERNETES_NAMESPACE --ignore-not-found=true
-        
-    - script:
-        name: wait to delete namespace
-        code: sleep 30
+  #  - kubectl:
+  #      name: delete namespace
+  #      server: $KUBERNETES_MASTER
+  #      token: $KUBERNETES_TOKEN
+ #       insecure-skip-tls-verify: true
+  #      command: delete namespace $KUBERNETES_NAMESPACE --ignore-not-found=true
+   #     
+    #- script:
+     #   name: wait to delete namespace
+      #  code: sleep 30
         
     - kubectl:
         name: create namespace    
