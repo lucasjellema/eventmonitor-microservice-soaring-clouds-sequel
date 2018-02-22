@@ -19,22 +19,23 @@ eventHubListener.subscribeToEvents(
         try {
             var event = JSON.parse(message);
             handleEventHubEvent(event);
-
         } catch (error) {
-            console.log("failed to parse message from event hub", error);
+            console.log("failed to handle message from event hub", error);
 
         }
     }
 );
 
-function handleEventHubEvent(event) {
+async function handleEventHubEvent(event) {
     console.log("Event payload " + JSON.stringify(event));
-    // store event in Elastic Search Index
-    // model.saveEvent(event).then((result) => {
-    //     console.log("Event was saved to index")
-    // }).catch(function (e) {
-    //     console.error(e)
-    // })
+    try {
+        // store event in Elastic Search Index
+        var result = await model.saveEvent(event);
+
+        console.log("Event was saved to index")
+    } catch (e) {
+        console.error("Error in saving event "+JSON.stringify(e))
+    }
 
 }
 

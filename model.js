@@ -30,14 +30,14 @@ eventsModel.saveEvent = async function (event) {
         // );
         var response = await client.index({
             index: 'soaringevents',
-            id: event.transactionIdentifier,
+//            id: event.transactionIdentifier,
             type: event.eventType,
             body: event
         }
         );
 
         console.log("Response: " + JSON.stringify(response));
-        return shipping;
+        return response;
     }
     catch (e) {
         console.error("Error in Elastic Search - index document " + event.transactionIdentifier + ":" + JSON.stringify(e))
