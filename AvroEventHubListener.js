@@ -6,13 +6,16 @@ var KAFKA_ZK_SERVER_PORT = 2181;
 var EVENT_HUB_PUBLIC_IP = process.env.EVENT_HUB_HOST || '129.150.77.116';
 var SCHEMA_REGISTRY = process.env.SCHEMA_REGISTRY ||'http://129.150.114.134:8081'
 var APP_NAME = 'AvroEventHubListener';
-var APP_VERSION = '0.0.8';
+var APP_VERSION = '0.0.9';
 
 var topicName = process.env.SOARING_PRODUCTS_TOPIC_NAME ||"a516817-soaring-products";
 
 
 var avroEventHubListener = module.exports;
 
+console.log("EVENT_HUB_PUBLIC_IP "+EVENT_HUB_PUBLIC_IP)
+console.log("SCHEMA_REGISTRY "+SCHEMA_REGISTRY)
+console.log("TOPIC NAME "+topicName)
 
 var kafkaAvro = new KafkaAvro({
     kafkaBroker: EVENT_HUB_PUBLIC_IP||':6667',
