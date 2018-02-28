@@ -4,18 +4,19 @@ var kafkaLog  = KafkaAvro.getLogger();
 
 var KAFKA_ZK_SERVER_PORT = 2181;
 var EVENT_HUB_PUBLIC_IP = process.env.EVENT_HUB_HOST || '129.150.77.116';
-var SCHEMA_REGISTRY = 'http://129.150.114.134:8081'
+var SCHEMA_REGISTRY = process.env.SCHEMA_REGISTRY ||'http://129.150.114.134:8081'
 var APP_NAME = 'AvroEventHubListener';
-var APP_VERSION = '0.0.7';
-var topics = [topicName];
+var APP_VERSION = '0.0.8';
+
+var topicName = process.env.SOARING_PRODUCTS_TOPIC_NAME ||"a516817-soaring-products";
 
 
 var avroEventHubListener = module.exports;
 
 
 var kafkaAvro = new KafkaAvro({
-    kafkaBroker: '129.150.77.116:6667',
-    schemaRegistry: 'http://129.150.114.134:8081',
+    kafkaBroker: EVENT_HUB_PUBLIC_IP||':6667',
+    schemaRegistry: SCHEMA_REGISTRY,
     parseOptions: { wrapUnions: true }
 });
 
@@ -43,7 +44,6 @@ kafkaAvro.getConsumer({
     // the "getConsumer()" method will return a bluebird promise.
     .then(function(consumer) {
         // Topic Name can be a string, or an array of strings
-        var topicName = 'a516817-soaring-products';
 
         var stream = consumer.getReadStream(topicName, {
           waitInterval: 0
@@ -72,12 +72,7 @@ kafkaAvro.getConsumer({
     });
     
     
-// from the Oracle Event Hub - Platform Cluster Connect Descriptor
 
-var topicName = "a516817-soaring-products";
-
-// // from the Oracle Event Hub - Platform Cluster Connect Descriptor
-// var kafkaConnectDescriptor = process.env.EVENT_HUB_HOST||"129.150.77.116";
 
 console.log("Running Module " + APP_NAME + " version " + APP_VERSION);
 console.log("Event Hub Host " + process.env.EVENT_HUB_HOST);

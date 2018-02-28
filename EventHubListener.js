@@ -12,8 +12,7 @@ var Consumer = kafka.Consumer
 
 // from the Oracle Event Hub - Platform Cluster Connect Descriptor
 
-var topicName = "a516817-soaring-shipping-news";
-
+var topicName = process.env.SOARING_SHIPPINGNEWS_TOPIC_NAME||"a516817-soaring-shipping-news";
 // // from the Oracle Event Hub - Platform Cluster Connect Descriptor
 // var kafkaConnectDescriptor = process.env.EVENT_HUB_HOST||"129.150.77.116";
 

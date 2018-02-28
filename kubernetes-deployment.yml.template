@@ -32,6 +32,12 @@ spec:
             value: $ELASTIC_CONNECTOR_VARIABLE
           - name: EVENT_HUB_HOST
             value: $EVENT_HUB
+          - name: SCHEMA_REGISTRY
+            value: $SCHEMA_REGISTRY
+          - name: SOARING_PRODUCTS_TOPIC_NAME 
+            value: $SOARING_PRODUCTS_TOPIC_NAME 
+          - name: SOARING_SHIPPINGNEWS_TOPIC_NAME
+            value: $SOARING_SHIPPINGNEWS_TOPIC_NAME
       imagePullSecrets:
       - name: wrelease
       restartPolicy: Always
