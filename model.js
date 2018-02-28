@@ -29,7 +29,7 @@ eventsModel.saveEvent = async function (event) {
         // }
         // );
         var response = await client.index({
-            index: 'soaringevents',
+            index: 'soaringeventsshippingnews',
 //            id: event.transactionIdentifier,
             type: event.eventType,
             body: event
@@ -42,4 +42,33 @@ eventsModel.saveEvent = async function (event) {
     catch (e) {
         console.error("Error in Elastic Search - index document " + event.transactionIdentifier + ":" + JSON.stringify(e))
     }
-}//eventsModel
+}//eventsModel.saveEvent
+
+
+
+eventsModel.saveProductEvent = async function (event) {
+    console.log(" event.transactionIdentifier"+ event.transactionIdentifier)
+    console.log(" event type "+ event.eventType)
+    try {
+        // var response = await client.index({
+        //     index: 'soaringevents',
+        //     id: '1235',
+        //     type: 'ShippingEvent',
+        //     body: {"a":"asdsdsda"}
+        // }
+        // );
+        var response = await client.index({
+            index: 'soaringeventsproduct',
+//            id: event.transactionIdentifier,
+            type: event.eventType,
+            body: event
+        }
+        );
+
+        console.log("Response: " + JSON.stringify(response));
+        return response;
+    }
+    catch (e) {
+        console.error("Error in Elastic Search - index document " + event.transactionIdentifier + ":" + JSON.stringify(e))
+    }
+}//eventsModel.saveProductEvent

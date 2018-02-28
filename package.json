@@ -4,7 +4,8 @@
   "description": "Microservice for monitoring and gathering all events.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "eslintConfig": {
     "parserOptions": {
@@ -23,9 +24,11 @@
   "author": "Lucas Jellema",
   "license": "ISC",
   "dependencies": {
+    "bunyan": "^1.8.12",
+    "kafka-avro": "^0.8.1",
     "body-parser": "^1.18.2",
-    "express": "^4.16.2",
     "elasticsearch": "^14.0.0",
+    "express": "^4.16.2",
     "kafka-node": "^2.2.0"
   }
 }

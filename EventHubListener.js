@@ -18,36 +18,41 @@ var topicName = "a516817-soaring-shipping-news";
 // var kafkaConnectDescriptor = process.env.EVENT_HUB_HOST||"129.150.77.116";
 
 console.log("Running Module " + APP_NAME + " version " + APP_VERSION);
-console.log("Event Hub Host "+process.env.EVENT_HUB_HOST);
-console.log("Event Hub Topic "+topicName);
+console.log("Event Hub Host " + process.env.EVENT_HUB_HOST);
+console.log("Event Hub Topic " + topicName);
 
-var subscribers = [];   
+var subscribers = [];
 
 eventListenerAPI.subscribeToEvents = function (callback) {
     subscribers.push(callback);
 }
 
 var KAFKA_ZK_SERVER_PORT = 2181;
-var EVENT_HUB_PUBLIC_IP = process.env.EVENT_HUB_HOST||'129.150.77.116';
+var EVENT_HUB_PUBLIC_IP = process.env.EVENT_HUB_HOST || '129.150.77.116';
 
 var consumerOptions = {
     host: EVENT_HUB_PUBLIC_IP + ':' + KAFKA_ZK_SERVER_PORT,
-    groupId: 'consume-events-from-event-hub-for-soaring-event-monitor',
+    groupId: 'local-consume-events-from-event-hub-for-soaring-event-monitor',
     sessionTimeout: 15000,
     protocol: ['roundrobin'],
     fromOffset: 'earliest' // equivalent of auto.offset.reset valid values are 'none', 'latest', 'earliest'
 };
 
 var topics = [topicName];
-var consumerGroup = new kafka.ConsumerGroup(Object.assign({ id: 'consumer1' }, consumerOptions), topics);
+var consumerGroup = new kafka.ConsumerGroup(Object.assign({ id: 'consumerLocal' }, consumerOptions), topics);
 consumerGroup.on('error', onError);
 consumerGroup.on('message', onMessage);
+
+consumerGroup.on('connect', function () {
+    console.log('connected to ' + topicName + " at " + consumerOptions.host);
+})
 
 
 
 function onMessage(message) {
-    console.log('%s read msg Topic="%s" Partition=%s Offset=%d', this.client.clientId, message.topic, message.partition, message.offset);
-    console.log("Message Value " + message.value)
+    console.log('%s read msg Topic="%s" Partition=%s Offset=%d'
+    , this.client.clientId, message.topic, message.partition, message.offset);
+    //    console.log("Message Value " + message.value)
 
     subscribers.forEach((subscriber) => {
         subscriber(message.value);

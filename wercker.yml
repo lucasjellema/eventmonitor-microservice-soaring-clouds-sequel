@@ -1,4 +1,4 @@
-box: node:8
+box: node:8.9.4-wheezy
 build:
   steps:
     - script:
@@ -7,6 +7,9 @@ build:
     - script:
         name: Create TLS key and cert
         code: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=nginxsvc/O=nginxsvc"
+    - script:
+        name: A step that installs the libsasl2-dev library that is required to get Kafka Avro to work
+        code: apt-get update && apt-get install -y libsasl2-dev 
 
 push-to-releases:
   steps:

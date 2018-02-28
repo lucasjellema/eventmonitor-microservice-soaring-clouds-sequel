@@ -3,13 +3,16 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var http = require('http');
+//const avro = require('avsc');
+
 
 // local modules
 var eventHubListener = require("./EventHubListener.js");
+var avroEventHubListener = require("./AvroEventHubListener.js");
 var model = require("./model");
 
 var PORT = process.env.APP_PORT || 8098;
-var APP_VERSION = "0.0.5"
+var APP_VERSION = "0.0.6"
 var APP_NAME = "EventMonitorMS"
 console.log("Running " + APP_NAME + " version " + APP_VERSION);
 
@@ -26,6 +29,46 @@ eventHubListener.subscribeToEvents(
     }
 );
 
+avroEventHubListener.subscribeToEvents(
+    (message) => {
+        console.log("EventBridge: Received AVRO Product event from event hub");
+        console.log(message)
+        try {
+            handleProductEventHubEvent(message);
+        } catch (error) {
+            console.log("failed to handle message from event hub", error);
+
+        }
+
+    }
+);
+
+
+async function handleProductEventHubEvent(message) {
+    console.log("Event payload " + JSON.stringify(message));
+    var event = {
+        "eventType": "ProductEvent",
+        "payload": {
+            "productIdentifier": message.productId
+        }
+        ,
+        "module": "products.microservice",
+        "transactionIdentifier": message.productId,
+        "timestamp": getTimestampAsString()
+    }
+    // store event in Elastic Search Index
+    var result = await model.saveProductEvent(event);
+}
+
+
+getTimestampAsString = function (theDate) {
+    var sd = theDate ? theDate : new Date();
+    try {
+        var ts = sd.getUTCFullYear() + '-' + (sd.getUTCMonth() + 1) + '-' + sd.getUTCDate() + 'T' + sd.getUTCHours() + ':' + sd.getUTCMinutes() + ':' + sd.getSeconds();
+        return ts;
+    } catch (e) { "getTimestampAsString exception " + JSON.stringify(e) }
+}
+
 async function handleEventHubEvent(event) {
     console.log("Event payload " + JSON.stringify(event));
     try {
@@ -34,7 +77,7 @@ async function handleEventHubEvent(event) {
 
         console.log("Event was saved to index")
     } catch (e) {
-        console.error("Error in saving event "+JSON.stringify(e))
+        console.error("Error in saving event " + JSON.stringify(e))
     }
 
 }
@@ -43,7 +86,7 @@ async function handleEventHubEvent(event) {
 var app = express();
 var server = http.createServer(app);
 server.listen(PORT, function () {
-    console.log('Soaring through the Clouds - the Sequel Microservice' + APP_NAME + ' running, Express is listening... at ' + PORT + " for /health, /about and /shipping API calls");
+    console.log('Soaring through the Clouds - the Sequel Microservice' + APP_NAME + ' running, Express is listening... at ' + PORT + " for /health, /about and /events API calls");
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
