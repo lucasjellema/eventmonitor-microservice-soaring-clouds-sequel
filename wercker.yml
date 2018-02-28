@@ -90,21 +90,15 @@ redeploy-to-oke:
     
     - script:
         name: "Visualise Kubernetes config"
-        code: cat kubernetes-deployment.yml
+        code: cat kubernetes-replace-deployment.yml
     
         
-    # - kubectl:
-    #     name: create deployment
-    #     server: $KUBERNETES_MASTER
-    #     token: $KUBERNETES_TOKEN
-    #     insecure-skip-tls-verify: true
-    #     command: apply -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$KUBERNETES_NAMESPACE
     - kubectl:
         name: replace deployment
         server: $KUBERNETES_MASTER
         token: $KUBERNETES_TOKEN
         insecure-skip-tls-verify: true
-        command: replace -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$KUBERNETES_NAMESPACE
+        command: replace -f $WERCKER_ROOT/kubernetes-replace-deployment.yml --namespace=$KUBERNETES_NAMESPACE
 
 
 functional-test:
