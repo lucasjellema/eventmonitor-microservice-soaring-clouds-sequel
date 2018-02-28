@@ -93,12 +93,18 @@ redeploy-to-oke:
         code: cat kubernetes-deployment.yml
     
         
+    # - kubectl:
+    #     name: create deployment
+    #     server: $KUBERNETES_MASTER
+    #     token: $KUBERNETES_TOKEN
+    #     insecure-skip-tls-verify: true
+    #     command: apply -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$KUBERNETES_NAMESPACE
     - kubectl:
-        name: create deployment
+        name: replace deployment
         server: $KUBERNETES_MASTER
         token: $KUBERNETES_TOKEN
         insecure-skip-tls-verify: true
-        command: apply -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$KUBERNETES_NAMESPACE
+        command: replace -f $WERCKER_ROOT/kubernetes-deployment.yml --namespace=$KUBERNETES_NAMESPACE
 
 
 functional-test:
