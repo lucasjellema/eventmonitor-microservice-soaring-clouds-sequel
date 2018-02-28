@@ -44,12 +44,30 @@ avroEventHubListener.subscribeToEvents(
 );
 
 
+function getValueOrNull()
+
 async function handleProductEventHubEvent(message) {
     console.log("Event payload " + JSON.stringify(message));
     var event = {
         "eventType": "ProductEvent",
         "payload": {
-            "productIdentifier": message.productId
+            "productIdentifier": message.productId,
+            "productCode": message.productCode.string,
+            "productName": message.productName.string,
+            "imageUrl": message.imageUrl?message.imageUrl.string:null,
+            "price": message.price?message.price.double:null,
+            "size": message.size?message.size.int:null,
+            "weight": message.weight?message.weight.double:null,
+            "categories": message.categories,
+            "tags": message.tags,
+            "dimension": message.dimension? { 
+                "unit": message.dimension.unit?message.dimension.unit.string:null,
+                "length": message.dimension.length?message.dimension.length.double:null,
+                "height": message.dimension.height?message.dimension.height.double:null,
+                "width": message.dimension.width?message.dimension.width.double:null
+            }:null,
+            "color": message.color?message.color.string:null
+        
         }
         ,
         "module": "products.microservice",
