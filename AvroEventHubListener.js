@@ -37,7 +37,7 @@ kafkaLog.addStream({
 
 
 kafkaAvro.getConsumer({
-  'group.id': 'librd-test2',
+  'group.id': 'soaring-event-monitor',
   'socket.keepalive.enable': true,
   'enable.auto.commit': true,
 })
