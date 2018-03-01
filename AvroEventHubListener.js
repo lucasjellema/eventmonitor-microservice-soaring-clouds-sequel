@@ -52,12 +52,13 @@ kafkaAvro.getConsumer({
           waitInterval: 0
         });
 
-        stream.on('error', function() {
-          process.exit(1);
+        stream.on('error', function(error) {
+            console.log("Error on stream "+error);
+            process.exit(1);
         });
 
         consumer.on('error', function(err) {
-          console.log(err);
+          console.log("Error on consumer "+err);
           process.exit(1);
         });
 
