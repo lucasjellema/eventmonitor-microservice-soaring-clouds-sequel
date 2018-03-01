@@ -8,11 +8,11 @@ var http = require('http');
 
 // local modules
 var eventHubListener = require("./EventHubListener.js");
-var avroEventHubListener = require("./AvroEventHubListener.js");
+//var avroEventHubListener = require("./AvroEventHubListener.js");
 var model = require("./model");
 
 var PORT = process.env.APP_PORT || 8098;
-var APP_VERSION = "0.0.8"
+var APP_VERSION = "0.0.9"
 var APP_NAME = "EventMonitorMS"
 console.log("Running " + APP_NAME + " version " + APP_VERSION);
 
@@ -29,6 +29,7 @@ eventHubListener.subscribeToEvents(
     }
 );
 
+/*
 avroEventHubListener.subscribeToEvents(
     (message) => {
         console.log("EventBridge: Received AVRO Product event from event hub");
@@ -42,7 +43,7 @@ avroEventHubListener.subscribeToEvents(
 
     }
 );
-
+*/
 
 async function handleProductEventHubEvent(message) {
     console.log("Event payload " + JSON.stringify(message));
