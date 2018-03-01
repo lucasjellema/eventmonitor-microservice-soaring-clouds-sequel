@@ -58,7 +58,8 @@ kafkaAvro.getConsumer({
         });
 
         consumer.on('error', function(err) {
-          console.log("Error on consumer "+err);
+            console.log("Error on consumer "+err);
+            console.log("Error: "+JSON.stringify(err));
           process.exit(1);
         });
 
